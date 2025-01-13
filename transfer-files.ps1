@@ -15,6 +15,13 @@ Move-Folders
 
 Write-Output 'File transfer completed.'
 
+<#
+.SYNOPSIS
+    Tests the existence of specified folders.
+
+.DESCRIPTION
+    The Test-Folders function checks if the specified folders exist and performs necessary actions based on the results.
+#>
 function Test-Folders {
     $sourceUserPath = "\\$SourceComputer\C$\Users\$User"
     $targetUserPath = "\\$TargetComputer\C$\Users\$User"
@@ -30,6 +37,12 @@ function Test-Folders {
     
 }
 
+<#
+.SYNOPSIS
+    Moves specified folders from the source computer to the target computer.
+.DESCRIPTION
+    The Move-Folders function copies the specified folders from the source computer to the target computer.
+#>
 function Move-Folders {
     foreach ($folder in $folders) {
         $sourcePath = Join-Path -Path $sourceUserPath -ChildPath $folder
