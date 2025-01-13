@@ -1,8 +1,20 @@
 param (
-    [string]$SourceComputer,
-    [string]$TargetComputer,
+    [string]$Source,
+    [string]$Target,
     [string]$User
 )
+# If parameters are not provided, prompt the user to enter them
+if (-not $Source) {
+    $Source = Read-Host 'Enter the source computer name'
+}
+if (-not $Target) {
+    $Target = Read-Host 'Enter the target computer name'
+}
+if (-not $User) {
+    $User = Read-Host 'Enter the user name'
+}
+
+
 
 # Define the folders to transfer
 $folders = @('Desktop', 'Documents', 'Downloads', 'Pictures', 'Videos')
@@ -24,7 +36,7 @@ Write-Output 'File transfer completed.'
 #>
 function Test-Folders {
     $sourceUserPath = "\\$SourceComputer\C$\Users\$User"
-    $targetUserPath = "\\$TargetComputer\C$\Users\$User"
+    $targetUserPath = "\\$target\C$\Users\$User"
     if (-Not (Test-Path $sourceUserPath)) {
         Write-Output "User folder not found on source computer: $sourceUserPath"
         exit
@@ -46,10 +58,10 @@ function Test-Folders {
 function Move-Folders {
     foreach ($folder in $folders) {
         $sourcePath = Join-Path -Path $sourceUserPath -ChildPath $folder
-        $targetPath = "\\$TargetComputer\C$\Users\$User\$folder"
+        $targetPath = "\\$target\C$\Users\$User\$folder"
     
         if (Test-Path $sourcePath) {
-            Write-Output "Transferring $folder from $SourceComputer to $TargetComputer..."
+            Write-Output "Transferring $folder from $SourceComputer to $target..."
             Copy-Item -Path $sourcePath -Destination $targetPath -Recurse -Force
             Write-Output "$folder transferred successfully."
         }
