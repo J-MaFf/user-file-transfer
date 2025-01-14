@@ -9,7 +9,7 @@
       "type": "PowerShell",
       "request": "launch",
       "script": "${workspaceFolder}/transfer-files.ps1",
-      "args": ["KFWS2TC01", "KFWW11L5009", "admin-jmaffiola", "KFI"]
+      "args": ["KFWS2TC01", "KFWW11L5009", "khenke", "KFI"]
     }
   ]
 }
