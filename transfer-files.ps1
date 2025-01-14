@@ -1,4 +1,45 @@
+<#
+.SYNOPSIS
+    This script transfers user files from a source computer to a target computer.
+
+.DESCRIPTION
+    The script connects to the source and target computers using credentials retrieved from 1Password CLI.
+    It then transfers specified user folders (Desktop, Documents, Downloads, Pictures, Videos) from the source computer to the target computer.
+
+.PARAMETER Source
+    The name of the source computer.
+
+.PARAMETER Target
+    The name of the target computer.
+
+.PARAMETER User
+    The user name whose files are to be transferred.
+
+.PARAMETER domain
+    The domain name to retrieve credentials from 1Password.
+
+.EXAMPLE
+    .\transfer-files.ps1 -Source "SourcePC" -Target "TargetPC" -User "jdoe" -domain "KFI"
+
+.NOTES
+    Author: Joey Maffiola
+    Date: 1/14/25
+#>
+
 function Test-Domain {
+    <#
+    .SYNOPSIS
+        Retrieves the UUID for a given domain.
+
+    .PARAMETER domain
+        The domain name to retrieve the UUID for.
+
+    .OUTPUTS
+        System.String
+
+    .EXAMPLE
+        $UUID = Test-Domain -domain "KFI"
+    #>
     param (
         [string]$domain
     )
@@ -14,6 +55,25 @@ function Test-Domain {
 }
 
 function Move-Files {
+    <#
+    .SYNOPSIS
+        Main function of the program.
+
+    .PARAMETER Source
+        The name of the source computer.
+
+    .PARAMETER Target
+        The name of the target computer.
+
+    .PARAMETER User
+        The user name whose files are to be transferred.
+
+    .PARAMETER domain
+        The domain name to retrieve credentials from 1Password.
+
+    .EXAMPLE
+        Move-Files -Source "SourcePC" -Target "TargetPC" -User "jdoe" -domain "KFI"
+    #>
     param (
         [string]$Source,
         [string]$Target,
@@ -73,6 +133,19 @@ function Move-Files {
 }
 
 function Test-Folders {
+    <#
+    .SYNOPSIS
+        Checks if the user folders exist on both the source and target computers.
+
+    .PARAMETER sourceUserPath
+        The path to the user folder on the source computer.
+
+    .PARAMETER targetUserPath
+        The path to the user folder on the target computer.
+
+    .EXAMPLE
+        Test-Folders -sourceUserPath "SourceDrive:\Users\jdoe" -targetUserPath "TargetDrive:\Users\jdoe"
+    #>
     param (
         [string]$sourceUserPath,
         [string]$targetUserPath
@@ -90,6 +163,27 @@ function Test-Folders {
 }
 
 function Move-Folders {
+    <#
+    .SYNOPSIS
+        Transfers specified folders from the source computer to the target computer.
+
+    .PARAMETER sourceUserPath
+        The path to the user folder on the source computer.
+
+    .PARAMETER targetUserPath
+        The path to the user folder on the target computer.
+
+    .PARAMETER folders
+        The list of folders to transfer.
+
+    .EXAMPLE
+        Move-Folders -sourceUserPath "SourceDrive:\Users\jdoe" -targetUserPath "TargetDrive:\Users\jdoe" -folders @('Desktop', 'Documents')
+    #>
+    param (
+        [string]$sourceUserPath,
+        [string]$targetUserPath,
+        [array]$folders
+    )
     foreach ($folder in $folders) {
         $sourcePath = Join-Path -Path $sourceUserPath -ChildPath $folder
         $targetPath = Join-Path -Path $targetUserPath
