@@ -53,17 +53,17 @@ function Move-Files {
     New-PSDrive -Name 'SourceDrive' -PSProvider FileSystem -Root "\\$Source\C$" -Credential $Credential
     New-PSDrive -Name 'TargetDrive' -PSProvider FileSystem -Root "\\$Target\C$" -Credential $Credential
 
-    $sourceUserPath = "SourceDrive:\Users\$User"
-    $targetUserPath = "TargetDrive:\Users\$User"
+    $sourceUserPath = Join-Path -Path 'SourceDrive:\Users' -ChildPath $User
+    $targetUserPath = Join-Path -Path 'TargetDrive:\Users' -ChildPath $User
 
     # Define the folders to transfer
     $folders = @('Desktop', 'Documents', 'Downloads', 'Pictures', 'Videos')
 
     # Check if the user folder exists on the source computer & target computer
-    Test-Folders
+    Test-Folders -sourceUserPath $sourceUserPath -targetUserPath $targetUserPath
 
     # Transfer each folder
-    Move-Folders
+    Move-Folders -sourceUserPath $sourceUserPath -targetUserPath $targetUserPath -folders $folders
 
     # Remove temporary network drives
     Remove-PSDrive -Name 'SourceDrive'
@@ -80,6 +80,10 @@ function Move-Files {
     The Test-Folders function checks if the specified folders exist and performs necessary actions based on the results.
 #>
 function Test-Folders {
+    param (
+        [string]$sourceUserPath,
+        [string]$targetUserPath
+    )
     if (-Not (Test-Path $sourceUserPath)) {
         Write-Output "User folder not found on source computer: $sourceUserPath"
         exit
@@ -94,7 +98,12 @@ function Test-Folders {
 
 <#
 .SYNOPSIS
-    Moves specified folders from the source computer to the target computer.
+function Move-Folders {
+    param (
+        [string]$sourceUserPath,
+        [string]$targetUserPath,
+        [array]$folders
+    )
 .DESCRIPTION
     The Move-Folders function copies the specified folders from the source computer to the target computer.
 #>
@@ -112,7 +121,7 @@ function Move-Folders {
             catch {
                 Write-Output "Access to the path '$sourcePath' is denied. Retrying with elevated permissions..."
                 $elevatedCommand = "Copy-Item -Path `"$sourcePath`" -Destination `"$targetPath`" -Recurse -Force"
-                Start-Process powershell -ArgumentList "-Command `$elevatedCommand" -Verb RunAs -Wait
+                Start-Process powershell -ArgumentList "-Command $elevatedCommand" -Verb RunAs -Wait
                 Write-Output "$folder transferred successfully with elevated permissions."
             }
         }
