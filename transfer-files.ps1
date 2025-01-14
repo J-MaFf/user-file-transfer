@@ -101,7 +101,7 @@ function Test-Folders {
 function Move-Folders {
     foreach ($folder in $folders) {
         $sourcePath = Join-Path -Path $sourceUserPath -ChildPath $folder
-        $targetPath = "TargetDrive:\Users\$User\$folder"
+        $targetPath = Join-Path -Path $targetUserPath -ChildPath $folder
     
         if (Test-Path $sourcePath) {
             Write-Output "Transferring $folder from $Source to $Target..."
@@ -112,7 +112,7 @@ function Move-Folders {
             catch {
                 Write-Output "Access to the path '$sourcePath' is denied. Retrying with elevated permissions..."
                 $elevatedCommand = "Copy-Item -Path `"$sourcePath`" -Destination `"$targetPath`" -Recurse -Force"
-                Start-Process powershell -ArgumentList "-Command `$elevatedCommand" -Verb RunAs -Wait
+                Start-Process powershell -ArgumentList "-Command $elevatedCommand" -Verb RunAs -Wait
                 Write-Output "$folder transferred successfully with elevated permissions."
             }
         }
